@@ -1,0 +1,37 @@
+1) A user enters an email and password in a React login page. The frontend says login successful, but the backend rejects the credentials. 
+Question: Which component should decide whether login succeeds, and why?
+Answer: The backend server must make the final authentication decision.
+React is responsible for collecting the email and password and displaying the result. 
+It cannot securely decide that the credentials are valid simply because the user clicked Login.
+How can the frontend show the wrong result?
+The React application might have a bug, such as displaying "Login successful" without checking the HTTP response from the backend.
+For example, this is incorrect:
+async function login() {
+    fetch("/api/login", {
+        method: "POST"
+    });
+    alert("Login successful!");
+}
+A better approach is to check the response:
+async function login() {
+    const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: "user@example.com",
+            password: "example-password"
+        })
+    });
+    if (response.ok) {
+        alert("Login successful!");
+    } else {
+        alert("Login failed!");
+    }
+}
+The backend server should decide whether login succeeds because it is responsible for securely validating 
+the user's credentials against the stored user information.
+The React frontend should send the email and password to the backend through an HTTPS request and display the result returned by the server.
+In this scenario, the frontend may have a bug because it displays success without checking the backend response. 
+I would inspect the browser's Network tab, verify the backend's HTTP status and response body, and check the React login-handling code.
